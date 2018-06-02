@@ -1,8 +1,28 @@
 let restaurants,
     neighborhoods,
     cuisines
-var map
-var markers = []
+var map;
+var markers = [];
+
+/**
+ * Skip links logic
+ */
+const skipLink = document.getElementById('skip-link');
+
+skipLink.addEventListener('click', (e) => {
+  document.getElementById('filter-header').focus();
+});
+
+
+function registerServiceWorker() {
+  if(!navigator.serviceWorker) return;
+
+  navigator.serviceWorker.register('/sw.js')
+    .then((reg) => console.log(reg))
+    .catch((err) => console.log(err));
+}
+
+registerServiceWorker();
 
 /**
  * Fetch neighborhoods and cuisines as soon as the page is loaded.
@@ -140,7 +160,8 @@ createRestaurantHTML = (restaurant) => {
 
   const image = document.createElement('img');
   image.className = 'restaurant-img';
-  image.setAttribute('alt', restaurant.name);
+  image.setAttribute('alt', restaurant.altText);
+  image.srcset = `/img/${restaurant.photo400} 400w, /img/${restaurant.photo800} 800w`
   image.src = DBHelper.imageUrlForRestaurant(restaurant);
   li.append(image);
 
@@ -182,23 +203,3 @@ addMarkersToMap = (restaurants = self.restaurants) => {
     self.markers.push(marker);
   });
 }
-
-/**
- * Skip links logic
- */
-const skipLink = document.getElementById('skip-link');
-
-skipLink.addEventListener('click', (e) => {
-  document.getElementById('filter-header').focus();
-});
-
-
-function registerServiceWorker() {
-  if(!navigator.serviceWorker) return;
-
-  navigator.serviceWorker.register('/sw.js')
-    .then((reg) => console.log(reg))
-    .catch((err) => console.log(err));
-}
-
-registerServiceWorker();
