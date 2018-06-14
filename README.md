@@ -1,5 +1,8 @@
 # Mobile Web Specialist Certification Course
 ---
+
+I revamped the styling and accessibility of this starter boilerplate by making all pages responsive to various screensize. Accessibility was also a central focus, so ARIA attributes, sizing, color, image alt tags and tab order were all crafted carfully. Lastly, this app supports offline-first accessibility by utilizing a service worker to cache essential data. I hope to further evolve this project over the next 2 sections of the Mobile Web Specialist Nanodegree from Google and Udacity. 
+
 #### _Three Stage Course Material Project - Restaurant Reviews_
 
 ## Project Overview: Stage 1
