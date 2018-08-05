@@ -5,7 +5,7 @@
     "neighborhood": "Manhattan",
     "photo800": "1-800.jpg",
     "photo400": "1-400.jpg",
-    "altText": "A waiter attending to guests at Mission Chinese Food",
+    "altText": "A waiter attending to guests at Mission Chinese Food restaurant",
     "address": "171 E Broadway, New York, NY 10002",
     "latlng": {
       "lat": 40.713829,
@@ -46,7 +46,7 @@
     "neighborhood": "Brooklyn",
     "photo800": "2-800.jpg",
     "photo400": "2-400.jpg",
-    "altText": "A delicious looking cheese pizza from Emily.",
+    "altText": "A delicious looking cheese pizza from restaurant Emily.",
     "address": "919 Fulton St, Brooklyn, NY 11238",
     "latlng": {
       "lat": 40.683555,
@@ -87,7 +87,7 @@
     "neighborhood": "Manhattan",
     "photo800": "3-800.jpg",
     "photo400": "3-400.jpg",
-    "altText": "The luxurious dining room at Kang Ho Dong Baekjeong",
+    "altText": "The luxurious dining room at the Kang Ho Dong Baekjeong restaurant",
     "address": "1 E 32nd St, New York, NY 10016",
     "latlng": {
       "lat": 40.747143,
@@ -210,7 +210,7 @@
     "neighborhood": "Brooklyn",
     "photo800": "6-800.jpg",
     "photo400": "6-400.jpg",
-    "altText": "A rustic southern dining room full of people enjoying Hometown BBQ. ",
+    "altText": "A rustic southern dining room full of people enjoying Hometown BBQ.",
     "address": "454 Van Brunt St, Brooklyn, NY 11231",
     "latlng": {
       "lat": 40.674925,
@@ -251,7 +251,7 @@
     "neighborhood": "Manhattan",
     "photo800": "7-800.jpg",
     "photo400": "7-400.jpg",
-    "altText": "View from the street of the small but incredibly delicious Superiority Burger.",
+    "altText": "View from the street of the small but incredibly delicious Superiority Burger restaurant.",
     "address": "430 E 9th St, New York, NY 10009",
     "latlng": {
       "lat": 40.727397,
@@ -292,7 +292,7 @@
     "neighborhood": "Manhattan",
     "photo800": "8-800.jpg",
     "photo400": "8-400.jpg",
-    "altText": "The Dutch's famous blue sign hangs over the streets of Manhattan.",
+    "altText": "The Dutch restaurant's famous blue sign hangs over the streets of Manhattan.",
     "address": "131 Sullivan St, New York, NY 10012",
     "latlng": {
       "lat": 40.726584,
