@@ -21,17 +21,44 @@ class DBHelper {
    * Fetch all restaurants.
    */
   static fetchRestaurants(callback) {
+    /* Fetch Options */
     const options = {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json; charset=utf-8',
       }
     };
+    /* IndexDB */
+    const dbPromise = idb.open('restaurant-db', 1, upgradeDB => {
+      const store = upgradeDB.createObjectStore('restaurants', { keyPath: 'id' });
+      store.createIndex('by-neighborhood', 'neighborhood');
+      store.createIndex('by-cuisine', 'cuisine_type');
+    });
 
-    fetch(DBHelper.DATABASE_URL, options)
-      .then(resp => resp.json())
-      .then(restaurants => callback(null, restaurants))
-      .catch(error => callback(error, null));
+    dbPromise
+      .then(db => {
+        const tx = db.transaction('restaurants', 'readwrite');
+        const resp = tx.objectStore('restaurants');
+        return resp.getAll();
+      })
+      .then(restaurants => {
+        if(restaurants.length !== 0) {
+          callback(null, restaurants)
+        } else {
+          fetch(DBHelper.DATABASE_URL, options)
+            .then(resp => resp.json())
+            .then(restaurants => {
+              dbPromise.then(db => {
+                const tx = db.transaction('restaurants', 'readwrite');
+                const resp = tx.objectStore('restaurants');
+                restaurants.forEach(restaurant => resp.put(restaurant));
+                callback(null, restaurants);
+                return tx.complete;
+              });
+            })
+            .catch(error => callback(error, null));
+        }
+      });
   }
 
   /**
@@ -153,7 +180,7 @@ class DBHelper {
    * Restaurant image URL.
    */
   static imageUrlForRestaurant(restaurant) {
-    return (`/img/${restaurant}-800.jpg`);
+    return (`/img/${restaurant.photograph}-800.jpg`);
   }
 
   /**

@@ -1,18 +1,19 @@
 const staticCacheName = 'restaurant-review-v1';
 const urlsToCache = [
   '/',
-  '/data/restaurants.json',
   '/css/styles.css',
   '/js/dbhelper.js',
   '/js/main.js',
   '/js/restaurant_info.js',
-  '/sw.js'
+  '/js/idb.js',
+  '/sw.js',
+  'manifest.json'
 ];
 
 function addToCache() {
   for(let i = 1; i <= 10; i++) {
     urlsToCache.push(`/restaurant.html?id=${i}`);
-    urlsToCache.push(`/img/${i}-800.jpg`);
+    urlsToCache.push(`/img/${i}-400.jpg`);
   }
 }
 addToCache();

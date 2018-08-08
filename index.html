@@ -4,7 +4,9 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#252831"/>
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="manifest" href="/manifest.json">
     <title>Restaurant Reviews</title>
   </head>
 
@@ -19,7 +21,7 @@
 
     <main id="maincontent" class="maincontent"> <!-- Main Content -->
       <section id="map-container" class="map-container" aria-label="Google Map">
-        <div id="map" class="map"></div>
+        <div id="map" class="map" title="Google Map"></div>
       </section>
       <section id="results" class="results">
         <div id="filter-restaurants" class="filter-restaurants">
@@ -40,6 +42,7 @@
     </footer> <!-- End Footer -->
 
     <!-- Scripts -->
+    <script charset="utf-8" src="js/idb.js"></script>
     <script charset="utf-8" src="js/dbhelper.js"></script>
     <script charset="utf-8" src="js/main.js"></script>
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD466FELHa1YmI6-5V8o9b58-GyFaYGsSo&libraries=places&callback=initMap"></script>
