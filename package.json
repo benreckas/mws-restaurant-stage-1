@@ -1,0 +1,34 @@
+{
+  "name": "mws-restaurant-stage-1",
+  "version": "1.0.0",
+  "description": "Restaurant Reviews App",
+  "main": "sw.js",
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.2.0",
+    "idb": "^2.1.3"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "del": "^3.0.0",
+    "gulp": "github:gulpjs/gulp#4.0",
+    "gulp-babel": "^7.0.1",
+    "gulp-clean-css": "^3.10.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-minify": "0.0.15",
+    "gulp-rev": "^8.1.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/benreckas/mws-restaurant-stage-1.git"
+  },
+  "keywords": [],
+  "author": "Ben Reckas",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/benreckas/mws-restaurant-stage-1/issues"
+  },
+  "homepage": "https://github.com/benreckas/mws-restaurant-stage-1#readme"
+}
