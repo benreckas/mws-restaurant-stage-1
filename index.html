@@ -5,6 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#252831"/>
+    <link rel="stylesheet" href="/node_modules/@fortawesome/fontawesome-free/css/all.min.css">
     <link rel="stylesheet" href="css/styles.css">
     <link rel="manifest" href="/manifest.json">
     <title>Restaurant Reviews</title>
@@ -21,6 +22,12 @@
 
     <main id="maincontent" class="maincontent"> <!-- Main Content -->
       <section id="map-container" class="map-container" aria-label="Google Map">
+        <div class="map-button-container">
+          <button id="map-button" class="map-button" aria-label="Show Map">
+            <span class="fas fa-map-marked-alt"></span>
+          </button>
+          <label for="map-button">Show Map</label>
+        </div>
         <div id="map" class="map" title="Google Map"></div>
       </section>
       <section id="results" class="results">

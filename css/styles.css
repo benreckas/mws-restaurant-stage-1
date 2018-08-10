@@ -5,7 +5,7 @@
 :root {
   /* Brand Color */
   --blue: #252831;
-  --orange: #f18200;
+  --orange: #C72B00;
   --bright-orange: orange;
   --black: #333;
   --white: #fefefe;
@@ -119,6 +119,7 @@ footer p {
 }
 
 footer a {
+  color: var(--white);
   padding: 20px 0;
 }
 
@@ -196,6 +197,39 @@ ul.breadcrumb { /* Display list items side by side */
   height: 400px;
   min-width: 100%;
   background-color: var(--bg-color);
+}
+
+.map-button-container {
+  width: 100%;
+  height: 400px;
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.map-button-container label {
+  font-size: 1.6em;
+  text-transform: uppercase;
+  margin-top: 10px;
+  letter-spacing: 0.1rem;
+}
+
+.map-button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  transition: transform 0.4s;
+}
+
+.map-button:hover {
+  transform: scale(1.2);
+}
+
+.fa-map-marked-alt {
+  font-size: 5rem;
+  color: var(--blue);
 }
 
 /* ============ Restaurant Filtering ============ */
