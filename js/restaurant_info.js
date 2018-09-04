@@ -148,17 +148,13 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
   });
   container.appendChild(ul);
 
-  addReview();
-  updateReview();
-  deleteReview();
+  formEvents();
 }
 
 /**
  * Create review HTML and add it to the webpage.
  */
 createReviewHTML = (review) => {
-  console.log('review', review);
-
   const li = document.createElement('li');
   li.id = `review-${review.id}`;
   const name = document.createElement('p');
@@ -185,11 +181,13 @@ createReviewHTML = (review) => {
   const editIcon = document.createElement('span');
   editIcon.classList.add('fas', 'fa-edit');
   editIcon.dataset.id = review.id;
+  editIcon.addEventListener('click', e => editReview(e));
   li.appendChild(editIcon);
 
   const deleteIcon = document.createElement('span');
   deleteIcon.classList.add('far', 'fa-trash-alt');
   deleteIcon.dataset.id = review.id;
+  deleteIcon.addEventListener('click', e => deleteReview(e));
   li.appendChild(deleteIcon);
 
   return li;
@@ -239,96 +237,49 @@ function toggleIsFavorite() {
   });
 }
 
-function addReview() {
-  const addReviewButton = document.querySelector('#add-review');
-  const cancelFormButton = document.querySelector('#cancel-form');
+const addReview = function() {
+  const submitFormButton = document.querySelector('#submit-form');
+
+  submitFormButton.dataset.editing = false;
+  resetForm();
+  showForm();
+}
+
+const editReview = function(e) {
+  const id = e.target.dataset.id; /** Set on edit icon click */
+  const name = document.querySelector('#user-name');
+  const rating = document.querySelector('#rating');
+  const comments = document.querySelector('#user-comments');
+  const submitFormButton = document.querySelector('#submit-form');
+
+  submitFormButton.dataset.editing = true;
+  showForm();
+
+  DBHelper.fetchReviewById(id, (error, review) => {
+    if(error) {
+      console.error(error);
+    } else {
+      name.value = review.name;
+      name.dataset.id = review.id;
+      rating.value = review.rating;
+      comments.value = review.comments;
+    }
+  })
+}
+
+const submitForm = async function(e) {
   const submitFormButton = document.querySelector('#submit-form');
   const name = document.querySelector('#user-name');
   const rating = document.querySelector('#rating');
   const comments = document.querySelector('#user-comments');
   const restaurant = document.querySelector('#restaurant-name');
   const container = document.querySelector('#form-container');
+  const ul = document.getElementById('reviews-list');
+  const id = name.dataset.id;
 
+  e.preventDefault();
 
-
-  addReviewButton.addEventListener('click', e => {
-    container.style.display = 'block';
-    name.focus();
-  });
-
-  cancelFormButton.addEventListener('click', e => {
-    console.log('Cancel New');
-    e.preventDefault();
-    container.style.display = 'none';
-    name.value = '';
-    rating.value = 1;
-    comments.value = '';
-  });
-
-  submitFormButton.addEventListener('click', e => {
-    console.log('Adding New Review');
-    e.preventDefault();
-    container.style.display = 'none';
-    const data = {
-      restaurant_id: +restaurant.dataset.id,
-      name: name.value,
-      rating: +rating.value,
-      comments: comments.value
-    }
-
-    DBHelper.addNewReview(data, (error, review) => {
-      if (error) {
-        console.error(error);
-      } else {
-        const ul = document.getElementById('reviews-list');
-        ul.appendChild(createReviewHTML(review));
-      }
-    });
-  });
-}
-
-function updateReview() {
-  let id; /** Set on edit icon click */
-  const editButtons = document.querySelectorAll('.fa-edit');
-  const cancelFormButton = document.querySelector('#cancel-form');
-  const submitFormButton = document.querySelector('#submit-form');
-  const name = document.querySelector('#user-name');
-  const rating = document.querySelector('#rating');
-  const comments = document.querySelector('#user-comments');
-  const container = document.querySelector('#form-container');
-
-  editButtons.forEach(button => {
-    button.addEventListener('click', e => {
-      container.style.display = 'block';
-      name.focus();
-      id = e.target.dataset.id;
-
-      DBHelper.fetchReviewById(e.target.dataset.id, (error, review) => {
-        if(error) {
-          console.error(error);
-        } else {
-          name.value = review.name;
-          rating.value = review.rating;
-          comments.value = review.comments;
-        }
-      })
-    })
-  })
-
-  cancelFormButton.addEventListener('click', e => {
-    console.log('Cancel Edit');
-    e.preventDefault();
-    container.style.display = 'none';
-    name.value = '';
-    rating.value = 1;
-    comments.value = '';
-  });
-
-  submitFormButton.addEventListener('click', e => {
-    console.log('Updating Review');
-    e.preventDefault();
-    container.style.display = 'none';
-
+  if(submitFormButton.dataset.editing === 'true') {
     const data = {
       name: name.value,
       rating: +rating.value,
@@ -340,27 +291,70 @@ function updateReview() {
         console.error(error);
       } else {
         const oldReview = document.querySelector(`#review-${id}`);
-        const ul = document.getElementById('reviews-list');
         oldReview.style.display = 'none';
         ul.appendChild(createReviewHTML(review));
       }
     });
+  } else {
+    const data = {
+      restaurant_id: +restaurant.dataset.id,
+      name: name.value,
+      rating: +rating.value,
+      comments: comments.value
+    }
+
+    DBHelper.addNewReview(data, (error, review) => {
+      if (error) {
+        console.error(error);
+      } else {
+        ul.appendChild(createReviewHTML(review));
+      }
+    });
+  }
+
+  container.style.display = 'none';
+}
+
+const deleteReview = function(e) {
+  DBHelper.deleteReviewById(e.target.dataset.id, (error) => {
+    if (error) {
+      console.error(error);
+    } else {
+      e.target.parentElement.style.display = 'none';
+    }
   });
 }
 
-function deleteReview() {
-  const deleteButtons = document.querySelectorAll('.fa-trash-alt');
+const resetForm = function(e) {
+  const name = document.querySelector('#user-name');
+  const rating = document.querySelector('#rating');
+  const comments = document.querySelector('#user-comments');
+  const container = document.querySelector('#form-container');
 
-  deleteButtons.forEach(button => {
-    button.addEventListener('click', e => {
-      DBHelper.deleteReviewById(e.target.dataset.id, (error) => {
-        if (error) {
-          console.error(error);
-        } else {
-          console.log(`Deleted Review`);
-          e.target.parentElement.style.display = 'none';
-        }
-      });
-    })
-  })
+  if(e) {
+    e.preventDefault();
+  };
+
+  container.style.display = 'none';
+  name.value = '';
+  rating.value = 1;
+  comments.value = '';
+}
+
+const showForm = function() {
+  const name = document.querySelector('#user-name');
+  const container = document.querySelector('#form-container');
+
+  container.style.display = 'block';
+  name.focus();
+}
+
+function formEvents() {
+  const addReviewButton = document.querySelector('#add-review');
+  const cancelFormButton = document.querySelector('#cancel-form');
+  const submitFormButton = document.querySelector('#submit-form');
+
+  cancelFormButton.addEventListener('click', e => resetForm(e));
+  addReviewButton.addEventListener('click', e => addReview(e));
+  submitFormButton.addEventListener('click', e => submitForm(e));
 }
