@@ -197,4 +197,106 @@ class DBHelper {
     return marker;
   }
 
+  static setIsFavorite(isFavorite, id) {
+    const options = {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+      }
+    };
+
+    fetch(`http://localhost:1337/restaurants/${id}/?is_favorite=${isFavorite}`, options)
+    .then(console.log('Success!'))
+    .catch(error => callback(error, null));
+  }
+
+  static fetchAllRestaurantReviews(id, callback) {
+    const options = {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+      }
+    };
+
+    fetch(`http://localhost:1337/reviews/?restaurant_id=${id}`, options)
+      .then(resp => resp.json())
+      .then(reviews => {
+          // dbPromise.then(db => {
+          //   const tx = db.transaction('restaurants', 'readwrite');
+          //   const resp = tx.objectStore('restaurants');
+          //   restaurants.forEach(restaurant => resp.put(restaurant));
+          //   callback(null, restaurants);
+          //   return tx.complete;
+          // });
+        callback(null, reviews);
+      })
+      .catch(error => callback(error, null));
+  }
+
+  static updateReviewById(id, data, callback) {
+    const options = {
+      method: 'PUT',
+      body: JSON.stringify(data),
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+      }
+    };
+
+    fetch(`http://localhost:1337/reviews/${id}`, options)
+      .then(resp => resp.json())
+      .then(review => callback(null, review))
+      .catch(error => callback(error, null));
+  }
+
+  static fetchReviewById(id, callback) {
+    const options = {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+      }
+    };
+
+    fetch(`http://localhost:1337/reviews/${id}`, options)
+      .then(resp => resp.json())
+      .then(review => {
+          // dbPromise.then(db => {
+          //   const tx = db.transaction('restaurants', 'readwrite');
+          //   const resp = tx.objectStore('restaurants');
+          //   restaurants.forEach(restaurant => resp.put(restaurant));
+          //   callback(null, restaurants);
+          //   return tx.complete;
+          // });
+        callback(null, review);
+      })
+      .catch(error => callback(error, null));
+  }
+
+  static addNewReview(data, callback) {
+    const options = {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+      }
+    };
+
+    fetch(`http://localhost:1337/reviews/`, options)
+      .then(resp => resp.json())
+      .then(review => callback(null, review))
+      .catch(error => callback(error, null));
+  }
+
+  static deleteReviewById(id, callback) {
+    const options = {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+      }
+    };
+
+    fetch(`http://localhost:1337/reviews/${id}`, options)
+      .then(resp => resp.json())
+      .then(success => callback(null, success))
+      .catch(error => callback(error, null));
+  }
 }
