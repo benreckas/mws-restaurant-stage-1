@@ -13,17 +13,6 @@ skipLink.addEventListener('click', (e) => {
   document.getElementById('filter-header').focus();
 });
 
-
-function registerServiceWorker() {
-  if(!navigator.serviceWorker) return;
-
-  navigator.serviceWorker.register('/sw.js')
-    .then((reg) => console.log(reg))
-    .catch((err) => console.log(err));
-}
-
-registerServiceWorker();
-
 /**
  * Fetch neighborhoods and cuisines as soon as the page is loaded.
  */
@@ -87,22 +76,6 @@ fillCuisinesHTML = (cuisines = self.cuisines) => {
     select.append(option);
   });
 }
-
-/**
- * Initialize Google map, called from HTML.
- */
-// window.initMap = () => {
-//   let loc = {
-//     lat: 40.722216,
-//     lng: -73.987501
-//   };
-//   self.map = new google.maps.Map(document.getElementById('map'), {
-//     zoom: 12,
-//     center: loc,
-//     scrollwheel: false
-//   });
-//   updateRestaurants();
-// }
 
 loadMap = () => {
   document.querySelector('#map-button').addEventListener('click', () => {

@@ -2,6 +2,7 @@ const staticCacheName = 'restaurant-review-v1';
 const urlsToCache = [
   '/',
   '/css/styles.css',
+  '/js/worker.js',
   '/js/dbhelper.js',
   '/js/main.js',
   '/js/restaurant_info.js',

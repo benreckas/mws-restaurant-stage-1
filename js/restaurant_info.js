@@ -18,16 +18,23 @@ window.initMap = () => {
     if (error) { // Got an error!
       console.error(error);
     } else {
-      self.map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 16,
-        center: restaurant.latlng,
-        scrollwheel: false
+      document.querySelector('#map-button').addEventListener('click', () => {
+        self.map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 16,
+          center: restaurant.latlng,
+          scrollwheel: false
+        });
+        document.querySelector('.map-button-container').style.display = 'none';
+        DBHelper.mapMarkerForRestaurant(self.restaurant, self.map);
       });
       fillBreadcrumb();
-      DBHelper.mapMarkerForRestaurant(self.restaurant, self.map);
     }
   });
 }
+
+window.addEventListener('online', () => {
+  DBHelper.sendCachedRequests();
+});
 
 /**
  * Get current restaurant from page URL.
@@ -74,6 +81,7 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
 
   const isFavoriteButton = document.createElement('button');
   const setFavoriteIcon = restaurant.is_favorite == 'true' ? 'fas' : 'far';
+  isFavoriteButton.setAttribute('aria-label', 'Favorite Restaurant Button');
   isFavoriteButton.id = 'is-favorite-button';
   isFavoriteButton.innerHTML = `
     <span class="fa-stack fa-2x">
@@ -129,6 +137,7 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
   const header = document.getElementById('reviews-header');
   const title = document.createElement('h2');
   const button = document.createElement('button');
+  button.setAttribute('aria-label', 'Create New Review');
   button.innerHTML = 'Add Review';
   button.id='add-review';
 
@@ -255,19 +264,14 @@ const editReview = function(e) {
   submitFormButton.dataset.editing = true;
   showForm();
 
-  DBHelper.fetchReviewById(id, (error, review) => {
-    if(error) {
-      console.error(error);
-    } else {
-      name.value = review.name;
-      name.dataset.id = review.id;
-      rating.value = review.rating;
-      comments.value = review.comments;
-    }
-  })
+  /** Take values from desired comment and populate the comment form for editing */
+  name.value = e.target.parentElement.children[0].innerText;
+  name.dataset.id = id;
+  comments.value = e.target.parentElement.children[3].innerText;
+  rating.value = +e.target.parentElement.children[2].innerText.split(' ')[1];
 }
 
-const submitForm = async function(e) {
+const submitForm = function(e) {
   const submitFormButton = document.querySelector('#submit-form');
   const name = document.querySelector('#user-name');
   const rating = document.querySelector('#rating');
@@ -300,7 +304,8 @@ const submitForm = async function(e) {
       restaurant_id: +restaurant.dataset.id,
       name: name.value,
       rating: +rating.value,
-      comments: comments.value
+      comments: comments.value,
+      createdAt: Date.now()
     }
 
     DBHelper.addNewReview(data, (error, review) => {

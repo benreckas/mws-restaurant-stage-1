@@ -28,6 +28,12 @@
     <main id="maincontent" class="maincontent"> <!-- Main Content -->
       <!-- Map -->
       <section id="map-container" class="map-container" aria-label="Google Map">
+        <div class="map-button-container">
+          <button id="map-button" class="map-button" aria-label="Show Map">
+            <span class="fas fa-map-marked-alt"></span>
+          </button>
+          <label for="map-button">Show Map</label>
+        </div>
         <div id="map" class="map" role="application"></div>
       </section>
       <!-- Restaurant Info -->
@@ -64,8 +70,8 @@
                 <textarea class="form-control" id="user-comments" rows="5"></textarea>
               </div>
               <div class="form-buttons">
-                <button id="cancel-form" class="cancel-button">Cancel</button>
-                <button id="submit-form" class="submit-button">Submit</button>
+                <button id="cancel-form" class="cancel-button" aria-label="Cancel Form Submission">Cancel</button>
+                <button id="submit-form" class="submit-button" aria-label="Submit Form">Submit</button>
               </div>
             </form>
         </div>
@@ -79,6 +85,7 @@
 
     <!-- Scripts -->
     <script charset="utf-8" src="js/idb.js"></script>
+    <script charset="utf-8" src="js/worker.js"></script>
     <script charset="utf-8" src="js/dbhelper.js"></script>
     <script charset="utf-8" src="js/restaurant_info.js"></script>
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD466FELHa1YmI6-5V8o9b58-GyFaYGsSo&libraries=places&callback=initMap"></script>
