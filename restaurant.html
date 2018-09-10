@@ -5,6 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#252831"/>
+    <link rel="stylesheet" href="/node_modules/@fortawesome/fontawesome-free/css/all.min.css">
     <link rel="stylesheet" href="css/styles.css">
     <link rel="manifest" href="/manifest.json">
     <title>Restaurant Info</title>
@@ -27,18 +28,53 @@
     <main id="maincontent" class="maincontent"> <!-- Main Content -->
       <!-- Map -->
       <section id="map-container" class="map-container" aria-label="Google Map">
-        <div id="map" class="map"></div>
+        <div class="map-button-container">
+          <button id="map-button" class="map-button" aria-label="Show Map">
+            <span class="fas fa-map-marked-alt"></span>
+          </button>
+          <label for="map-button">Show Map</label>
+        </div>
+        <div id="map" class="map" role="application"></div>
       </section>
       <!-- Restaurant Info -->
       <section id="restaurant-container" class="restaurant-container">
         <h2 id="restaurant-name" class="restaurant-name"></h2>
-        <img id="restaurant-img" class="restaurant-img">
+        <div class="img-container">
+          <img id="restaurant-img" class="restaurant-img">
+        </div>
         <p id="restaurant-cuisine" class="restaurant-cuisine"></p>
         <p id="restaurant-address" class="restaurant-address"></p>
         <table id="restaurant-hours" class="restaurant-hours"></table>
       </section>
       <!-- Restaurant Reviews -->
       <section id="reviews-container" class="reviews-container">
+        <div id="reviews-header" class="reviews-header"></div>
+        <div id="form-container" class="form-container">
+          <form>
+              <div class="form-group">
+                <label for="user-name">Name</label>
+                <input type="input" class="form-control" id="user-name">
+              </div>
+              <div class="form-group">
+                <label for="rating">Rating</label>
+                <select class="form-control" id="rating">
+                  <option>1</option>
+                  <option>2</option>
+                  <option>3</option>
+                  <option>4</option>
+                  <option>5</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="user-comments">Comments</label>
+                <textarea class="form-control" id="user-comments" rows="5"></textarea>
+              </div>
+              <div class="form-buttons">
+                <button id="cancel-form" class="cancel-button" aria-label="Cancel Form Submission">Cancel</button>
+                <button id="submit-form" class="submit-button" aria-label="Submit Form">Submit</button>
+              </div>
+            </form>
+        </div>
         <ul id="reviews-list" class="reviews-list"></ul>
       </section>
     </main> <!-- End Main Content -->
@@ -49,6 +85,7 @@
 
     <!-- Scripts -->
     <script charset="utf-8" src="js/idb.js"></script>
+    <script charset="utf-8" src="js/worker.js"></script>
     <script charset="utf-8" src="js/dbhelper.js"></script>
     <script charset="utf-8" src="js/restaurant_info.js"></script>
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD466FELHa1YmI6-5V8o9b58-GyFaYGsSo&libraries=places&callback=initMap"></script>

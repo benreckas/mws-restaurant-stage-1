@@ -1,18 +1,34 @@
 /**
  * Common database helper functions.
  */
-class DBHelper {
 
-  /**
-   * Database URL.
-   * Change this to restaurants.json file location on your server.
-   */
+/**
+ * Import IndexedDB
+ */
+const dbPromise = idb.open("restaurant-review-db", 1, upgradeDB => {
+  /** Resturant Data */
+  const restaurantStore = upgradeDB.createObjectStore('restaurants', { keyPath: 'id' });
+  restaurantStore.createIndex('by-neighborhood', 'neighborhood');
+  restaurantStore.createIndex('by-cuisine', 'cuisine_type');
+
+  /** Review Data */
+  const reviewStore = upgradeDB.createObjectStore("reviews", {keyPath: "id"});
+  reviewStore.createIndex("restaurant_id", "restaurant_id");
+
+  /** Pending Data */
+  upgradeDB.createObjectStore("pending", {
+    keyPath: "id",
+    autoIncrement: true
+  });
+});
+
+class DBHelper {
   static get DATABASE_URL() {
     // LOCAL:
     // const port = 5500
     // return `http://localhost:${port}/data/restaurants.json`;
 
-    // SERVER:
+    // SERVER API:
     const port = 1337;
     return `http://localhost:${port}/restaurants/`
   }
@@ -29,11 +45,7 @@ class DBHelper {
       }
     };
     /* IndexDB */
-    const dbPromise = idb.open('restaurant-db', 1, upgradeDB => {
-      const store = upgradeDB.createObjectStore('restaurants', { keyPath: 'id' });
-      store.createIndex('by-neighborhood', 'neighborhood');
-      store.createIndex('by-cuisine', 'cuisine_type');
-    });
+    const dbPromise = idb.open("restaurant-review-db");
 
     dbPromise
       .then(db => {
@@ -197,4 +209,195 @@ class DBHelper {
     return marker;
   }
 
+  /**
+   * Queue items when offline, Send them when online connection is detected
+   */
+  static addPendingRequestToQueue(url, options) {
+    const dbPromise = idb.open("restaurant-review-db");
+
+    dbPromise
+      .then(db => {
+        const tx = db.transaction("pending", "readwrite");
+        tx
+          .objectStore("pending")
+          .put({
+            data: {
+              url,
+              options
+            }
+          })
+      })
+      .catch(error => console.log(error));
+  }
+
+  static sendCachedRequests() {
+    const dbPromise = idb.open("restaurant-review-db");
+
+    dbPromise.then(db => {
+      if (!db.objectStoreNames.length) {
+        console.log("DB not available");
+        db.close();
+        return;
+      }
+
+      const tx = db.transaction("pending", "readwrite");
+      tx
+        .objectStore("pending")
+        .iterateCursor(cursor => {
+          const value = cursor.value;
+          const url = value.data.url;
+          const options = value.data.options;
+
+          if (!cursor) {
+            return;
+          }
+
+          if (!url || !options) {
+            cursor.delete()
+            return;
+          };
+
+          fetch(url, options)
+            .then(resp => {
+              if(!resp.ok && !resp.redirected) { return }
+            })
+            .then(() => {
+              const deltx = db.transaction("pending", "readwrite");
+              deltx
+                .objectStore("pending")
+                .openCursor()
+                .then(cursor => cursor.delete());
+            });
+
+          cursor.continue();
+        })
+        .catch(error => console.log(error));
+    });
+  }
+
+  /**
+   * Toggle Favorite Restaurant
+   */
+  static setIsFavorite(isFavorite, id) {
+    const options = {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+      }
+    };
+    const url = `http://localhost:1337/restaurants/${id}/?is_favorite=${isFavorite}`;
+
+    fetch(url, options)
+    .then(console.log('Success!'))
+    .catch(error => {
+      DBHelper.addPendingRequestToQueue(url, options);
+      callback(error, null);
+    });
+  }
+
+  /**
+   * Fetch all Restaurant Reviews by Id
+   */
+  static fetchAllRestaurantReviews(id, callback) {
+    const options = {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+      }
+    };
+    const url = `http://localhost:1337/reviews/?restaurant_id=${id}`;
+
+    fetch(url, options)
+      .then(resp => resp.json())
+      .then(reviews => {
+        const dbPromise = idb.open("restaurant-review-db");
+
+        dbPromise.then(db => {
+          const tx = db.transaction('reviews', 'readwrite');
+          const resp = tx.objectStore('reviews');
+          reviews.forEach(review => resp.put(review));
+          tx.complete;
+        });
+
+        callback(null, reviews);
+      })
+      .catch(error => callback(error, null));
+  }
+
+  /**
+   * Update Review by Id
+   */
+  static updateReviewById(id, data, callback) {
+    const options = {
+      method: 'PUT',
+      body: JSON.stringify(data),
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+      }
+    };
+    const url = `http://localhost:1337/reviews/${id}`;
+
+    fetch(url, options)
+      .then(resp => resp.json())
+      .then(review => callback(null, review))
+      .catch(error => {
+        DBHelper.addPendingRequestToQueue(url, options);
+        callback(error, null);
+      });
+  }
+
+  static fetchReviewById(id, callback) {
+    const options = {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+      }
+    };
+    const url = `http://localhost:1337/reviews/${id}`;
+
+    fetch(url, options)
+      .then(resp => resp.json())
+      .then(review => callback(null, review))
+      .catch(error => {
+        DBHelper.addPendingRequestToQueue(url, options);
+        callback(error, null);
+      });
+  }
+
+  static addNewReview(data, callback) {
+    const options = {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+      }
+    };
+    const url = `http://localhost:1337/reviews/`;
+
+    fetch(url, options)
+      .then(resp => resp.json())
+      .then(review => callback(null, review))
+      .catch(error => {
+        DBHelper.addPendingRequestToQueue(url, options);
+        callback(error, null);
+      });
+  }
+
+  static deleteReviewById(id, callback) {
+    const options = {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+      }
+    };
+    const url = `http://localhost:1337/reviews/${id}`;
+
+    fetch(url, options)
+      .then(resp => resp.json())
+      .then(success => callback(null, success))
+      .catch(error => {
+        DBHelper.addPendingRequestToQueue(url, options);
+        callback(error, null);
+      });
+  }
 }

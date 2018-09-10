@@ -13,17 +13,6 @@ skipLink.addEventListener('click', (e) => {
   document.getElementById('filter-header').focus();
 });
 
-
-function registerServiceWorker() {
-  if(!navigator.serviceWorker) return;
-
-  navigator.serviceWorker.register('/sw.js')
-    .then((reg) => console.log(reg))
-    .catch((err) => console.log(err));
-}
-
-registerServiceWorker();
-
 /**
  * Fetch neighborhoods and cuisines as soon as the page is loaded.
  */
@@ -87,22 +76,6 @@ fillCuisinesHTML = (cuisines = self.cuisines) => {
     select.append(option);
   });
 }
-
-/**
- * Initialize Google map, called from HTML.
- */
-// window.initMap = () => {
-//   let loc = {
-//     lat: 40.722216,
-//     lng: -73.987501
-//   };
-//   self.map = new google.maps.Map(document.getElementById('map'), {
-//     zoom: 12,
-//     center: loc,
-//     scrollwheel: false
-//   });
-//   updateRestaurants();
-// }
 
 loadMap = () => {
   document.querySelector('#map-button').addEventListener('click', () => {
@@ -168,6 +141,7 @@ fillRestaurantsHTML = (restaurants = self.restaurants) => {
   });
   addMarkersToMap();
   lazyLoadImages();
+  toggleIsFavorite();
 }
 
 /**
@@ -182,6 +156,17 @@ createRestaurantHTML = (restaurant) => {
   image.setAttribute('data-src', DBHelper.imageUrlForRestaurant(restaurant));
   image.setAttribute('data-id', restaurant.photograph || restaurant.id);
   li.append(image);
+
+  const isFavoriteButton = document.createElement('button');
+  const setFavoriteIcon = restaurant.is_favorite == 'true' ? 'fas' : 'far';
+  isFavoriteButton.id = 'is-favorite-button';
+  isFavoriteButton.innerHTML = `
+    <span class="fa-stack fa-2x">
+      <i class="fas fa-bookmark fa-stack-2x"></i>
+      <i class="${setFavoriteIcon} fa-heart fa-stack-1x fa-inverse" data-favorite="${restaurant.is_favorite}" data-id="${restaurant.id}"></i>
+    </span>
+  `;
+  li.append(isFavoriteButton);
 
   const info = document.createElement('div');
   info.className = 'restaurant-info'
@@ -256,3 +241,21 @@ function lazyLoadImages() {
     });
 }
 
+function toggleIsFavorite() {
+  const buttons = document.querySelectorAll('#is-favorite-button');
+  for(button of buttons) {
+    button.addEventListener('click', e => {
+      if(e.target.dataset.favorite === 'false') {
+        e.target.dataset.favorite = 'true';
+        e.target.classList.remove('far');
+        e.target.classList.add('fas');
+        DBHelper.setIsFavorite(true, e.target.dataset.id);
+      } else {
+        e.target.dataset.favorite = 'false';
+        e.target.classList.remove('fas');
+        e.target.classList.add('far');
+        DBHelper.setIsFavorite(false, e.target.dataset.id);
+      };
+    })
+  };
+}
