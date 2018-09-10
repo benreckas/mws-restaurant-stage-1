@@ -307,6 +307,33 @@ class DBHelper {
     };
     const url = `http://localhost:1337/reviews/?restaurant_id=${id}`;
 
+    if(!navigator.onLine) {
+      const reviews = [];
+      const dbPromise = idb.open("restaurant-review-db");
+
+      dbPromise.then(db => {
+        if (!db.objectStoreNames.length) {
+          db.close();
+          return;
+        }
+
+        const tx = db.transaction("reviews", "readwrite");
+        tx
+          .objectStore("reviews")
+          .iterateCursor(cursor => {
+            if(!cursor) { return };
+
+            if(cursor.value.restaurant_id === id) { reviews.push(cursor.value) };
+
+            cursor.continue();
+          });
+
+        tx.complete.then(() => callback(null, reviews));
+      })
+      .catch(error => console.log(error));
+      return;
+    }
+
     fetch(url, options)
       .then(resp => resp.json())
       .then(reviews => {
